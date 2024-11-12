@@ -4,7 +4,6 @@
 
 - Working directory is this repository
 - Charlie cloud is installed on the cluster
-- RegCM repository is present in the working directory
 
 Log to one of the workers, e.g.:
 
