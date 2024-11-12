@@ -22,4 +22,4 @@ RUN ./configure --enable-clm45
 RUN make
 RUN make install
 
-RUN mkdir /input && mkdir /output && mkdir /recovery
+RUN mkdir /running_dir

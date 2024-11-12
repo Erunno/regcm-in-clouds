@@ -1,3 +1,6 @@
 RegCM/
 imgdir/
+scratch/
+foci_27/
 test-*/
+slurm-*.out
