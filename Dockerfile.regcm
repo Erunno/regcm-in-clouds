@@ -1,2 +1,25 @@
 FROM openmpi
+
+ARG COMMIT_ID=140b4ea
+
+RUN dnf install -y --setopt=install_weak_deps=false \
+                autoconf \
+                netcdf-fortran-devel \
+ && dnf clean all
+ 
+RUN mkdir /usr/include/hdf
+
+WORKDIR /code
+
+RUN git clone https://github.com/ICTP/RegCM.git \
+ && cd RegCM \
+ && git checkout ${COMMIT_ID}
+
+WORKDIR /code/RegCM
+
+RUN autoreconf -f -i
+RUN ./configure --enable-clm45
+RUN make
+RUN make install
+
 CMD [ "echo", "in", "regcm" ]

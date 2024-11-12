@@ -21,7 +21,7 @@ $> ch-image build -f Dockerfile.openmpi .
 $> ch-image build -f Dockerfile.regcm .
 ```
 
-Convert RegCM image to Charlie image instance. We are using `imgdir` to store the state of the instance:
+Convert RegCM image to Charlie image. We are using `imgdir` to store the state of the image:
 
 ```bash
 $> ch-convert -i ch-image -o dir regcm imgdir
