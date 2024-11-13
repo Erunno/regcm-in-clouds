@@ -1,15 +1,16 @@
 FROM openmpi
 
-ARG COMMIT_ID=140b4ea
-
 RUN dnf install -y --setopt=install_weak_deps=false \
                 autoconf \
                 netcdf-fortran-devel \
+                munge \
  && dnf clean all
  
 RUN mkdir /usr/include/hdf
 
 WORKDIR /code
+
+ARG COMMIT_ID=140b4ea
 
 RUN git clone https://github.com/ICTP/RegCM.git \
  && cd RegCM \
@@ -23,3 +24,4 @@ RUN make
 RUN make install
 
 RUN mkdir /running_dir
+RUN mkdir /output_dir

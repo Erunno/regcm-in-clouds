@@ -8,7 +8,8 @@
 #SBATCH --gres=gpu:V100
 #SBATCH -A kdss
 
-echo "Starting job: $SLURM_JOB_NAME-$SLURM_JOB_ID at $(date)"
+JOBNAME=$SLURM_JOB_NAME-$SLURM_JOB_ID
+echo "Starting job: $JOBNAME at $(date)"
 
 ########################################
 #                                      #
@@ -19,25 +20,41 @@ echo "Starting job: $SLURM_JOB_NAME-$SLURM_JOB_ID at $(date)"
 # Converted Charlie Cloud image directory
 IMGDIR=$HOME/phd/atm_sym/in-cloud/imgdir
 
+# Path to the experiment
 RUNDIR=$HOME/phd/atm_sym/in-cloud/foci_27
+# Path to input domain file - relative to $RUNDIR
 IN_DOMAIN=foci_27km.in
+# Path to output directory - relative to $RUNDIR
+OUTDIR=output
 
+# Note: this variable is currently unused
 SCRATCH_DIR=$HOME/phd/atm_sym/in-cloud/scratch/$SLURM_JOB_ID
 
 #################################
 # do not change below this line #
 #################################
 
-# variables as defined in Dockerfile.regcm
+# Variables defined in `Dockerfile.regcm`
 IN_IMG_RUNDIR=/running_dir
 IN_IMG_REGCM=/code/RegCM/bin/regcmMPICLM45
+
+FULL_INDOMAIN=$RUNDIR/$IN_DOMAIN
+FULL_OUTDIR=$RUNDIR/$OUTDIR/$JOBNAME
 
 if [ ! -d $SCRATCH_DIR ] ; then
     mkdir -p $SCRATCH_DIR
 fi
 
+if [ ! -d $FULL_OUTDIR ] ; then
+    mkdir -p $FULL_OUTDIR
+fi
+
 # TODO recover after failure
 
-srun ch-run -b $RUNDIR:/running_dir $IMGDIR -- /bin/bash -c "\
-    cd $IN_IMG_RUNDIR && \
-    $IN_IMG_REGCM $IN_DOMAIN"
+srun ch-run \
+    -b $RUNDIR:/running_dir \
+    -b $FULL_OUTDIR:/output_dir \
+    $IMGDIR -- \
+    /bin/bash -c "\
+        cd $IN_IMG_RUNDIR && \
+        $IN_IMG_REGCM $IN_DOMAIN"
