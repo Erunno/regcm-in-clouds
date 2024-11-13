@@ -4,7 +4,7 @@
 #SBATCH --ntasks=16
 #SBATCH --cpus-per-task=2
 #SBATCH --mem-per-cpu=2GB
-#SBATCH -p gpu-short
+#SBATCH -p gpu-long
 #SBATCH --gres=gpu:V100
 #SBATCH -A kdss
 
