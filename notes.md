@@ -59,7 +59,7 @@ script for sbatch:
 #SBATCH -A kdss
 #SBATCH --gres=gpu:V100
 
-srun ch-run ~/phd/ch-cloud-test/mpi-hello/imgdir/ -- /home/mpiuser/hello
+ch-run ~/phd/ch-cloud-test/mpi-hello/imgdir/ -- /home/mpiuser/hello
 ```
 
 Run with:

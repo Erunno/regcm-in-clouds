@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --nodes=4
+#SBATCH --nodes=1
 #SBATCH --job-name=regcm
-#SBATCH --ntasks=16
-#SBATCH --cpus-per-task=2
-#SBATCH --mem-per-cpu=2GB
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=64
+#SBATCH --mem-per-cpu=1GB
 #SBATCH -p gpu-long
 #SBATCH --gres=gpu:V100
 #SBATCH -A kdss
@@ -51,7 +51,7 @@ fi
 
 # TODO recover after failure
 
-srun ch-run \
+ch-run \
     -b $RUNDIR:/running_dir \
     -b $FULL_OUTDIR:/output_dir \
     $IMGDIR -- \
