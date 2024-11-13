@@ -33,7 +33,7 @@ $> ch-convert -i ch-image -o dir regcm imgdir
 
 Congratulations! You have successfully built the RegCM.
 
-### Prepare data and run the script
+### Prepare data and run the RegCM
 
 Assuming you have prepared the experiment, you will now need to edit the [run-on-cluster.sh](./run-on-cluster.sh) script.
 
