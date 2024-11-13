@@ -39,9 +39,9 @@ Assuming you have prepared the experiment, you will now need to edit the [run-on
 
 In the script, change the marked variables, i.e.:
 
-- `IMGDIR`: Directory containing the converted Charlie Cloud image.
+- `IMGDIR`: Directory containing the converted Charlie Cloud image. If you have followed the installation manual or run the [install.sh](./install.sh) script, the directory should be `<path/to/this/repo>/imgdir`.
 - `RUNDIR`: Path to the experiment directory.
-- `OUTDIR`: Path to the output directory, relative to `RUNDIR`.
+- `OUTDIR`: Path to the output directory, relative to `$RUNDIR`.
 - `IN_DOMAIN`: Path to the input domain file, relative to `$RUNDIR`. **Important:** RegCM runs in the container, and `RUNDIR` and `OUTDIR` are mounted to `/running_dir` and `/output_dir`, respectively. This means that the paths you provide in your domain file must respect this mapping. For example, the parameter `dirout` should be set as `dirout = '/output_dir'`.
 - `SCRATCH_DIR`: Path to the scratch directory for temporary files.
 
