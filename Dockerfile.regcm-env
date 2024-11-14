@@ -1,0 +1,10 @@
+FROM openmpi
+
+RUN dnf install -y --setopt=install_weak_deps=false \
+                autoconf \
+                netcdf-fortran-devel \
+                munge \
+ && dnf clean all
+ 
+RUN mkdir /usr/include/hdf
+

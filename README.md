@@ -8,7 +8,7 @@
 
 ### Build the RegCM
 
-**TL;DR**: You can run the [installation script](./install.sh), and the steps described in this section will be carried out for you. However, you will need to change `$ROOT_DIR` inside the script (see the README inside the script).
+**TL;DR**: You can run the [installation script](./install.sh), and the steps described in this section will be carried out for you (tested RegCM repo version is pulled from the GitHub unless script is parametrized). However, you will need to change `$ROOT_DIR` inside the script (see the README inside the script).
 
 Log in to one of the workers, e.g.:
 
@@ -22,7 +22,27 @@ Build base Charlie images *(it can take around 15 minutes)*. The first three are
 $> ch-image build -f Dockerfile.almalinux_8ch .
 $> ch-image build -f Dockerfile.libfabric .
 $> ch-image build -f Dockerfile.openmpi .
+$> ch-image build -f Dockerfile.regcm-env .
+```
+
+Last build command is conditional. It either pulls the RegCM repo from GitHub or it copies your local RegCM codebase. In either case you need to have `<repo/root/path>/RegCM` directory present as Dockerfile does not allow for condition `COPY`.
+
+```bash
+# 1st option -- use you your version of RegCM codebase
+$> git clone https://github.com/ICTP/RegCM.git
+   # make some changes to the repo (or don't ... you do you ¯\_(ツ)_/¯)
 $> ch-image build -f Dockerfile.regcm .
+
+# 2nd option -- pull from git
+$> mkdir RegCM # your folder has to contain this folder either way
+$> ch-image build -f Dockerfile.regcm --build-arg USE_LOCAL_REPO=false .
+
+# 2.5th option -- pull from git and specify the commit id on the main branch.
+#                 This version of the repo will be used.
+#                 Dockerfile contains a default value `140b4ea` that has been tested.
+#                    i.e. if not specified the latest repo version is not pulled.
+$> mkdir RegCM
+$> ch-image build -f Dockerfile.regcm --build-arg USE_LOCAL_REPO=false --build-arg COMMIT_ID=140b4ea .
 ```
 
 Convert the RegCM image to a Charlie image. We are using `imgdir` to store the state of the image:

@@ -1,12 +1,16 @@
 #!/bin/bash
+#SBATCH --time=24:00:00
 #SBATCH --nodes=1
 #SBATCH --job-name=regcm
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=64
-#SBATCH --mem-per-cpu=1GB
-#SBATCH -p gpu-long
-#SBATCH --gres=gpu:V100
+#SBATCH --cpus-per-task=128
+#SBATCH --mem-per-cpu=6GB
 #SBATCH -A kdss
+#SBATCH -p gpu-long
+#SBATCH --gpus=0
+
+#### parlab -p mpi-homo-short
+
 
 JOBNAME=$SLURM_JOB_NAME-$SLURM_JOB_ID
 echo "Starting job: $JOBNAME at $(date)"
