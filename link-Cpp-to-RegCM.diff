@@ -1,0 +1,288 @@
+diff --git a/Main/Makefile.am b/Main/Makefile.am
+index b42978116..e3e14957b 100644
+--- a/Main/Makefile.am
++++ b/Main/Makefile.am
+@@ -17,12 +17,12 @@
+ #
+ #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+ 
+-vpath %.o $(REGCM_ROOT)/Share:mpplib:netlib:batslib:ocnlib:chemlib:clmlib:\
++vpath %.o $(REGCM_ROOT)/Share:mpplib:mycpplib:netlib:batslib:ocnlib:chemlib:clmlib:\
+ 	microlib:cloudlib:cumlib:radlib:pbllib:clmlib/clm4.5/:oasislib:.
+ vpath %.inc $(REGCM_ROOT)/Share:.
+ 
+ SUBDIRS = mpplib netlib batslib ocnlib chemlib clmlib microlib cloudlib \
+-          cumlib radlib pbllib oasislib
++          cumlib radlib pbllib oasislib mycpplib
+ 
+ LDADD = $(OMPFLAGS)
+ 
+@@ -50,8 +50,10 @@ RRTMLIBPTH = radlib/RRTMG
+ PLUMELIBPTH = $(REGCM_ROOT)/external
+ BMILIBPTH = $(REGCM_ROOT)/external
+ OASISLIBPTH = ./oasislib
++MYCPPLIBPTH = ./mycpplib
+ 
+ MPPLIB = $(MPPLIBPTH)/libmpp.a
++MYCPPLIB = $(MYCPPLIBPTH)/libcpphello.la
+ CLMLIB = $(CLMLIBPTH)/libclm.a
+ BATLIB = $(BATLIBPTH)/libbats.a
+ OCNLIB = $(OCNLIBPTH)/libocn.a
+@@ -69,6 +71,7 @@ BMILIB = $(BMILIBPTH)/libbmi.a
+ OASISLIB = $(OASISLIBPTH)/liboasis.a
+ 
+ LMPPLIB = -L$(MPPLIBPTH) -lmpp
++LMYCPPLIB = -L$(MYCPPLIBPTH) -lcpphello
+ LBATLIB = -L$(BATLIBPTH) -lbats
+ LOCNLIB = -L$(OCNLIBPTH) -locn
+ LCLMLIB = -L$(CLMLIBPTH) -lclm
+@@ -91,12 +94,12 @@ LOASISLIB = -L$(OASISLIBPTH) -loasis
+ endif
+ 
+ if COMPILER_SUN
+-  CPPFLAGS += -M$(MPPLIBPTH) -M$(CLMLIBPTH) -M$(NETLIBPTH) -M$(CBMZLIBPTH) \
++  CPPFLAGS += -M$(MPPLIBPTH) -M$(MYCPPLIBPTH) -M$(CLMLIBPTH) -M$(NETLIBPTH) -M$(CBMZLIBPTH) \
+               -M$(CHELIBPTH) -M$(BATLIBPTH) -M$(OCNLIBPTH) -M$(CUMLIBPTH)  \
+               -M$(MICROLIBPTH) -M$(CLOUDLIBPTH) -M$(RADLIBPTH) -M$(PBLLIBPTH) \
+               -M$(RRTMLIBPTH) -M$(CLMLIBPTH)/clm4.5 -M$(OASISLIBPTH)
+ else
+-  CPPFLAGS += -I$(MPPLIBPTH) -I$(CLMLIBPTH) -I$(NETLIBPTH) -I$(CBMZLIBPTH) \
++  CPPFLAGS += -I$(MPPLIBPTH) -I$(MYCPPLIBPTH) -I$(CLMLIBPTH) -I$(NETLIBPTH) -I$(CBMZLIBPTH) \
+               -I$(CHELIBPTH) -I$(BATLIBPTH) -I$(OCNLIBPTH) -I$(CUMLIBPTH)  \
+               -I$(MICROLIBPTH) -I$(CLOUDLIBPTH) -I$(RADLIBPTH) -I$(PBLLIBPTH) \
+               -I$(RRTMLIBPTH) -I$(CLMLIBPTH)/clm4.5 -I$(OASISLIBPTH)
+@@ -105,7 +108,7 @@ endif
+ LIBS = $(LOASISLIB) $(LCLMLIB) $(LCHELIB) $(LCBMZLIB) $(LOCNLIB) $(LMICROLIB) \
+        $(CLOUDLIB) $(LCUMLIB) $(LRADLIB) $(LPBLLIB) $(LRRTMLIB) \
+        $(LCLMLIB45) $(LMPPLIB) $(SYSLIBS) $(LNETLIB) $(LBATLIB) \
+-       $(LPLUMELIB) $(LBMILIB)
++       $(LPLUMELIB) $(LBMILIB) $(LMYCPPLIB)
+ 
+ if DO_COMPILE_LIBCLM45
+ bin_PROGRAMS = regcm clmsa
+@@ -228,13 +231,13 @@ if DO_COMPILE_OASIS
+ regcm.o : regcm.F90 mod_dynparam.o mod_intkinds.o mod_realkinds.o mod_regcm_interface.o mod_runparams.o mod_date.o mod_constants.o mod_stdio.o mod_oasis_interface.o\
+          $(MPPLIB) $(CLMLIB) $(NETLIB) $(CHELIB) $(CBMZLIB) $(BATLIB) \
+ 	 $(OCNLIB) $(MICROLIB) $(CLOUDLIB) $(CUMLIB) $(RADLIB) $(PBLLIB) \
+-         $(RRTMLIB) $(PLUMELIB) $(BMILIB) $(OASISLIB)
++         $(RRTMLIB) $(PLUMELIB) $(BMILIB) $(OASISLIB) $(MYCPPLIB)
+ 	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -c $<
+ else
+ regcm.o : regcm.F90 mod_dynparam.o mod_intkinds.o mod_realkinds.o mod_regcm_interface.o mod_runparams.o mod_date.o mod_constants.o mod_stdio.o \
+          $(MPPLIB) $(CLMLIB) $(NETLIB) $(CHELIB) $(CBMZLIB) $(BATLIB) \
+ 	 $(OCNLIB) $(MICROLIB) $(CLOUDLIB) $(CUMLIB) $(RADLIB) $(PBLLIB) \
+-         $(RRTMLIB) $(PLUMELIB) $(BMILIB)
++         $(RRTMLIB) $(PLUMELIB) $(BMILIB) $(MYCPPLIB)
+ 	$(MPIFC) $(CPPFLAGS) $(FCFLAGS) -c $<
+ endif
+ 
+diff --git a/Main/mod_moloch.F90 b/Main/mod_moloch.F90
+index 5ec967155..f45563d21 100644
+--- a/Main/mod_moloch.F90
++++ b/Main/mod_moloch.F90
+@@ -18,7 +18,6 @@
+ !::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+ 
+ module mod_moloch
+-
+   use mod_intkinds
+   use mod_realkinds
+   use mod_dynparam
+@@ -224,6 +223,11 @@ module mod_moloch
+   subroutine init_moloch
+     implicit none
+     integer(ik4) :: i , j
++    integer :: timestamp(8)
++    
++    call date_and_time(values=timestamp)
++    write(*,*) ' [starting-init_moloch at ', timestamp, ']'
++
+     call assignpnt(mddom%msfu,mu)
+     call assignpnt(mddom%msfv,mv)
+     call assignpnt(mddom%msfx,mx)
+@@ -300,6 +304,10 @@ module mod_moloch
+       imin = icross1 - 2
+       imax = icross2 + 2
+     end if
++
++    call date_and_time(values=timestamp)
++    write(*,*) ' [ending-init_moloch at ', timestamp, ']'
++
+   end subroutine init_moloch
+   !
+   ! Moloch dynamical integration engine
+@@ -312,6 +320,11 @@ module mod_moloch
+     !real(rk8) :: jday
+     integer(ik4) :: i , j , k , n , nadv
+     integer(ik4) :: iconvec
++    integer :: timestamp(8)
++    
++    call date_and_time(values=timestamp)
++    write(*,*) ' [starting-moloch at ', timestamp, ']'
++
+ #ifdef DEBUG
+     character(len=dbgslen) :: subroutine_name = 'moloch'
+     integer(ik4) , save :: idindx = 0
+@@ -592,6 +605,9 @@ module mod_moloch
+     call time_end(subroutine_name,idindx)
+ #endif
+ 
++    call date_and_time(values=timestamp)
++    write(*,*) ' [ending-moloch at ', timestamp, ']'
++
+     contains
+ 
+       subroutine boundary
+diff --git a/Main/mycpplib/Makefile.am b/Main/mycpplib/Makefile.am
+new file mode 100644
+index 000000000..66d81834d
+--- /dev/null
++++ b/Main/mycpplib/Makefile.am
+@@ -0,0 +1,17 @@
++include $(REGCM_ROOT)/makeinc
++
++lib_LTLIBRARIES = libcpphello.la
++libcpphello_la_SOURCES = cpphello.hpp cpphello.cpp
++
++%.o: %.cpp
++	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
++
++distclean-local:
++	rm -f *.mod *__genmod.* *opt.yaml *optrpt
++
++clean-local:
++	rm -f *.mod *__genmod.* *opt.yaml *optrpt
++
++# --------------------------------------------------------------------
++# DO NOT DELETE THIS LINE -- make depend depends on it.
++
+diff --git a/Main/mycpplib/cpphello.cpp b/Main/mycpplib/cpphello.cpp
+new file mode 100644
+index 000000000..de55e6a89
+--- /dev/null
++++ b/Main/mycpplib/cpphello.cpp
+@@ -0,0 +1,10 @@
++#include <iostream>
++#include <ostream>
++#include "cpphello.hpp"
++#include <cstdio>
++
++extern "C" {
++    void cpp_hello() {
++        printf("Hello from C++!\n");
++    }
++}
+\ No newline at end of file
+diff --git a/Main/mycpplib/cpphello.hpp b/Main/mycpplib/cpphello.hpp
+new file mode 100644
+index 000000000..29f6c25ef
+--- /dev/null
++++ b/Main/mycpplib/cpphello.hpp
+@@ -0,0 +1,8 @@
++#ifndef CPP_HELLO_HPP
++#define CPP_HELLO_HPP
++
++extern "C" {
++    void cpp_hello();
++}
++
++#endif // CPP_HELLO_HPP
+diff --git a/Main/regcm.F90 b/Main/regcm.F90
+index cd7a362ac..4403a72cd 100644
+--- a/Main/regcm.F90
++++ b/Main/regcm.F90
+@@ -16,6 +16,17 @@
+ !    along with ICTP RegCM.  If not, see <http://www.gnu.org/licenses/>.
+ !
+ !::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
++module cpplib
++  
++  use iso_c_binding
++  implicit none
++  
++  interface
++    subroutine cpp_hello() bind(C)
++    end subroutine cpp_hello
++  end interface
++
++end module cpplib
+ 
+ program regcm
+ !
+@@ -25,6 +36,7 @@ program regcm
+ !
+ !**********************************************************************
+ !
++  use cpplib
+   use mod_intkinds
+   use mod_realkinds
+   use mod_date
+@@ -59,6 +71,8 @@ program regcm
+ !
+ !**********************************************************************
+ !
++call cpp_hello()
++
+ #ifndef OASIS
+   call mpi_init_thread(mpi_thread_single,iprov,ierr)
+   if ( ierr /= mpi_success ) then
+diff --git a/Share/mod_message.F90 b/Share/mod_message.F90
+index f65b9b42c..468161264 100644
+--- a/Share/mod_message.F90
++++ b/Share/mod_message.F90
+@@ -291,4 +291,4 @@ module mod_message
+   end subroutine viz_plot
+ 
+ end module mod_message
+-! vim: tabstop=8 expandtab shiftwidth=2 softtabstop=2
++! vim: tabstop=8 expandtab shiftwidth=2 softtabstop=2
+\ No newline at end of file
+diff --git a/Tools/Programs/my-cpp/Makefile.am b/Tools/Programs/my-cpp/Makefile.am
+new file mode 100644
+index 000000000..41ba1c00b
+--- /dev/null
++++ b/Tools/Programs/my-cpp/Makefile.am
+@@ -0,0 +1,16 @@
++include $(REGCM_ROOT)/makeinc
++
++lib_LTLIBRARIES = libcpphello.la
++libcpphello_la_SOURCES = cpphello.cpp cpphello.hpp
++
++%.o: %.cpp
++	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<
++
++clean-local:
++	rm -f *.mod *__genmod.* *opt.yaml *optrpt
++
++distclean-local:
++	rm -f *.mod *__genmod.* *opt.yaml *optrpt
++
++# --------------------------------------------------------------------
++# DO NOT DELETE THIS LINE -- make depend depends on it.
+diff --git a/configure.ac b/configure.ac
+index dd79f8698..47349b2c1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -30,6 +30,7 @@ AM_INIT_AUTOMAKE([foreign])
+ AC_PROG_RANLIB
+ AC_PROG_CC
+ AC_PROG_FC
++AC_PROG_CXX
+ 
+ AC_LANG([Fortran])
+ 
+@@ -903,6 +904,7 @@ AC_CONFIG_FILES([Makefile external/Makefile Share/Makefile PreProc/Makefile \
+                  PreProc/CH_EMISSIONS/interpolation/tools/REGCM_grid/Makefile \
+                  PreProc/CLM/Makefile PreProc/CLM45/Makefile PostProc/Makefile \
+                  Main/mpplib/Makefile Main/netlib/Makefile \
++                 Main/mycpplib/Makefile \
+                  Main/Makefile Main/batslib/Makefile Main/clmlib/Makefile \
+                  Main/ocnlib/Makefile Main/clmlib/clm4.5/Makefile \
+                  Main/chemlib/Makefile Main/chemlib/GAS_CBMZ_NEW/Makefile \
+@@ -914,4 +916,4 @@ AC_CONFIG_FILES([Makefile external/Makefile Share/Makefile PreProc/Makefile \
+                  Tools/Programs/RegCM_read/Makefile \
+                  Tools/Programs/timeseries/Makefile])
+ 
+-AC_OUTPUT
++AC_OUTPUT
+\ No newline at end of file

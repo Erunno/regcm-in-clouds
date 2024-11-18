@@ -25,7 +25,7 @@ $> ch-image build -f Dockerfile.openmpi .
 $> ch-image build -f Dockerfile.regcm-env .
 ```
 
-Last build command is conditional. It either pulls the RegCM repo from GitHub or it copies your local RegCM codebase. In either case you need to have `<repo/root/path>/RegCM` directory present as Dockerfile does not allow for condition `COPY`.
+Last build command is conditional. It either pulls the RegCM repo from GitHub or it copies your local RegCM codebase. In either case you need to have `<repo/root/path>/RegCM` directory present as Dockerfile does not allow for conditional `COPY`.
 
 ```bash
 # 1st option -- use you your version of RegCM codebase
@@ -74,3 +74,7 @@ Once everything ready you can run the RegCM:
 ```bash
 $> sbatch run-on-cluster.sh
 ```
+
+## Link Cpp to RegCM
+
+I was able to compile and link a C++ ("hello world") code to RegCM application. Necessary edits can be found in `diff` output: [./link-Cpp-to-RegCM.diff](./link-Cpp-to-RegCM.diff).

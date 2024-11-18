@@ -4,3 +4,4 @@ scratch/
 foci_27/
 test-*/
 slurm-*.out
+my-libs/

@@ -10,6 +10,10 @@
 #                         The repo has to present in the ROOT_DIR/RegCM.
 #    - `--commit-id=<commit_id>` use the commit ID for building the RegCM.
 #    - `--skip-env-images` skip building the environment images (almalinux_8ch, libfabric, openmpi, regcm-env).
+#
+# Example: ./install.sh --use-local-repo --skip-env-images
+#
+
 
 # root directory of the repository - change this to the path of the repository on your machine
 ROOT_DIR=~/phd/atm_sym/in-cloud 
