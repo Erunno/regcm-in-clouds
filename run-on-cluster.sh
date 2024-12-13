@@ -8,6 +8,8 @@
 #SBATCH -A kdss
 #SBATCH -p gpu-long
 #SBATCH --gpus=0
+#SBATCH --output=slurm-out/%x-%j.out
+#SBATCH --error=slurm-out/%x-%j.err
 
 #### parlab -p mpi-homo-short
 

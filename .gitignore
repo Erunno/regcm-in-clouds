@@ -5,3 +5,4 @@ foci_27/
 test-*/
 slurm-*.out
 my-libs/
+slurm-out/

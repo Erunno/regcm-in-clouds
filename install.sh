@@ -31,6 +31,9 @@ for arg in "$@"; do
         COMMIT_ID_OPT="--build-arg COMMIT_ID=${arg#*=}"
     elif [ "$arg" == "--skip-env-images" ]; then
         SKIP_ENV_IMAGES=true
+    else
+        echo -e "\e[31mInvalid argument: $arg\e[0m"
+        exit 1
     fi
 done
 
@@ -60,13 +63,24 @@ if [ "$SKIP_ENV_IMAGES" = false ]; then
     for dockerfile in "${dockerfiles[@]}"; do
         echo -e "\e[32mCreating image \e[35m$dockerfile\e[0m"
         ch-image build -f Dockerfile.$dockerfile .
+
+        if [ $? -ne 0 ]; then
+            echo -e "\e[31mFailed to build image \e[35m$dockerfile\e[0m"
+            exit 1
+        fi
     done
 fi
 
 echo -e "\e[32mCompiling \e[35mRegCM\e[0m"
 ch-image build -f Dockerfile.regcm $USE_LOCAL_REPO_OPT $COMMIT_ID_OPT .
 
-# convert images to charlei cloud directory
+if [ $? -ne 0 ]; then
+    echo -e "\e[31mFailed to compile \e[35mRegCM\e[0m"
+    exit 1
+fi
+
+# convert images to charlie cloud directory
 
 echo -e "\e[32mConverting image \e[35mregcm\e[32m to directory \e[35mimgdir\e[0m"
+rm -rf imgdir
 ch-convert -i ch-image -o dir regcm imgdir

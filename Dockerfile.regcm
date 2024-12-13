@@ -8,6 +8,7 @@ ARG COMMIT_ID=140b4ea
 COPY ./RegCM /code/RegCM
 
 RUN if [ "$USE_LOCAL_REPO" = "false" ]; then \
+    rm -rf ./RegCM && \
     git clone https://github.com/ICTP/RegCM.git /code/RegCM && \
     cd /code/RegCM && \
     git checkout ${COMMIT_ID}; \
@@ -15,8 +16,11 @@ fi
 
 WORKDIR /code/RegCM
 
+RUN tau initialize --mpi T
+
 RUN autoreconf -f -i
-RUN ./configure --enable-clm45
+RUN ./configure --enable-clm45 FC="tau gfortran" MPIFC="tau mpifort" 
+# RUN ./configure --enable-clm45
 RUN make
 RUN make install
 
