@@ -16,13 +16,13 @@ fi
 
 WORKDIR /code/RegCM
 
-RUN tau initialize --mpi T
-
 RUN autoreconf -f -i
-RUN ./configure --enable-clm45 FC="tau gfortran" MPIFC="tau mpifort" 
+# Use this line if you do not want to profile the code
 # RUN ./configure --enable-clm45
+RUN ./configure --enable-clm45 --enable-mpi-serial FCFLAGS="-pg" LDFLAGS="-pg" CFLAGS="-pg" CPPFLAGS="-pg"
 RUN make
 RUN make install
 
 RUN mkdir /running_dir
 RUN mkdir /output_dir
+RUN mkdir /profiling_dir

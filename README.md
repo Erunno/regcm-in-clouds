@@ -64,6 +64,7 @@ In the script, change the marked variables, i.e.:
 - `OUTDIR`: Path to the output directory, relative to `$RUNDIR`.
 - `IN_DOMAIN`: Path to the input domain file, relative to `$RUNDIR`. **Important:** RegCM runs in the container, and `RUNDIR` and `OUTDIR` are mounted to `/running_dir` and `/output_dir`, respectively. This means that the paths you provide in your domain file must respect this mapping. For example, the parameter `dirout` should be set as `dirout = '/output_dir'`.
 - `SCRATCH_DIR`: Path to the scratch directory for temporary files.
+- `PROFILING_DIR`: Path to directory where the profile `gprof.out` should be stored. It is relative to the `RUNDIR`.
 
 Optional changes:
 
@@ -78,3 +79,15 @@ $> sbatch run-on-cluster.sh
 ## Link Cpp to RegCM
 
 I was able to compile and link a C++ ("hello world") code to RegCM application. Necessary edits can be found in `diff` output: [./link-Cpp-to-RegCM.diff](./link-Cpp-to-RegCM.diff).
+
+## Profiling using `gprof`
+
+Currently, the code is compiled to produce a `gmon.out` file in the working directory. Some flags have been added during compilation (refer to [Dockerfile.regcm](./Dockerfile.regcm) for details). If necessary, you can remove these flags by modifying the Dockerfile (look for flags `-pg`).
+
+The `gmon.out` file contains a runtime profile that can be analyzed using the `gprof` tool. To generate a text-based profile, run the following command:
+
+```bash
+$> sbatch run-on-cluster.sh --profile
+```
+
+This will create a `gprof.out` file in the profiling directory, which is located in the working directory. You can change its location by modifying the `PROFILING_DIR` variable.

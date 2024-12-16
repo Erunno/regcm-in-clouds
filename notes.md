@@ -69,3 +69,13 @@ $> sbatch <path/to/script/above>
 ```
 
 *Note: For some strange reason the MPI program does not work when `--gres=gpu:V100` is omitted ¯\_(ツ)_/¯. (On parlab it does)*
+
+### MISC
+
+#### Cache Location
+
+The image cache is located in `/var/tmp/brabecm4.ch`. You can safely remove it with the following command:
+
+```bash
+rm -rf /var/tmp/brabecm4.ch
+```
