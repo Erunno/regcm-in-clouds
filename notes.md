@@ -70,6 +70,25 @@ $> sbatch <path/to/script/above>
 
 *Note: For some strange reason the MPI program does not work when `--gres=gpu:V100` is omitted ¯\_(ツ)_/¯. (On parlab it does)*
 
+### Common Errors
+
+If something fails and it worked in normal Docker, then a common issue is that in charlei, the ENV variables are not set. For example:
+
+```Dockerfile
+# ...
+
+# 6. Set Environment Variables
+ENV TIRAMISU_ROOT=/tiramisu
+# Include /usr/local/lib for Halide
+ENV LD_LIBRARY_PATH=/usr/local/lib:/tiramisu/build:/tiramisu/3rdParty/isl/lib:/tiramisu/3rdParty/llvm/lib
+
+# ...
+```
+
+These variables **will NOT** be set if you run the image with `ch-run <something>`. You need to set them again using `export <var>=<content>`.
+
+Similarly, variables are inherited from the environment in which you run `ch-run`. These variables can then interfere with those expected in the container.
+
 ### MISC
 
 #### Cache Location
