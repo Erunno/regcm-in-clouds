@@ -98,3 +98,13 @@ The image cache is located in `/var/tmp/brabecm4.ch`. You can safely remove it w
 ```bash
 rm -rf /var/tmp/brabecm4.ch
 ```
+
+#### Write File System
+
+If you run your `ch-*` commands with `-w` option you can write to the imgdir filesystem, e.g.:
+
+```bash
+ch-run -w -b .cache-hugging:/root/.cache/huggingface imgdir -- /bin/bash
+```
+
+
